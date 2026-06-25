@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Phone, Mail, FileText, Pencil, X } from 'lucide-react';
 import { useActiveProperty, useAppStore } from '@/store/useAppStore';
 import { SectionHeader } from '@/components/shared/SectionHeader';
@@ -12,20 +13,35 @@ export function PropertyView() {
   const property = useActiveProperty();
   const contacts = useAppStore((s) => s.contacts);
   const updateProperty = useAppStore((s) => s.updateProperty);
+  const deleteProperty = useAppStore((s) => s.deleteProperty);
   const { toast } = useToast();
+  const [confirmDelete, setConfirmDelete] = useState(false);
 
   if (!property) return null;
 
-  const propertyContacts = contacts.filter((c) => property.contactIds.includes(c.id));
+  const propertyId = property.id;
+  const propertyContactIds = property.contactIds;
+  const propertyContacts = contacts.filter((c) => propertyContactIds.includes(c.id));
 
   async function handleUnlink(contactId: string) {
     try {
-      await updateProperty(property.id, {
-        contactIds: property.contactIds.filter((id) => id !== contactId),
+      await updateProperty(propertyId, {
+        contactIds: propertyContactIds.filter((id) => id !== contactId),
       });
       toast('Kontakt entfernt', 'success');
     } catch {
       toast('Entfernen fehlgeschlagen', 'error');
+    }
+  }
+
+  async function handleDeleteProperty() {
+    try {
+      await deleteProperty(propertyId);
+      toast('Immobilie gelöscht', 'success');
+    } catch {
+      toast('Löschen fehlgeschlagen', 'error');
+    } finally {
+      setConfirmDelete(false);
     }
   }
 
@@ -34,7 +50,25 @@ export function PropertyView() {
       <SectionHeader
         title={property.name}
         description={property.address}
-        action={<EditPropertyDialog property={property} />}
+        action={
+          <div className="flex items-center gap-2">
+            <EditPropertyDialog property={property} />
+            {confirmDelete ? (
+              <>
+                <Button variant="ghost" onClick={() => setConfirmDelete(false)}>
+                  Abbrechen
+                </Button>
+                <Button variant="destructive" onClick={handleDeleteProperty}>
+                  Wirklich löschen?
+                </Button>
+              </>
+            ) : (
+              <Button variant="destructive" onClick={() => setConfirmDelete(true)}>
+                Löschen
+              </Button>
+            )}
+          </div>
+        }
       />
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">

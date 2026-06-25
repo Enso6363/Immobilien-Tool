@@ -38,7 +38,9 @@ interface AppState {
   updateMaintenanceTask: (id: ID, patch: Partial<MaintenanceTask>) => Promise<void>;
   deleteMaintenanceTask: (id: ID) => Promise<void>;
 
+  addProperty: (property: Omit<Property, 'id'>) => Promise<Property>;
   updateProperty: (id: ID, patch: Partial<Property>) => Promise<void>;
+  deleteProperty: (id: ID) => Promise<void>;
 
   addContact: (c: Omit<Contact, 'id'>) => Promise<Contact>;
   updateContact: (id: ID, patch: Partial<Contact>) => Promise<void>;
@@ -129,10 +131,41 @@ export const useAppStore = create<AppState>((set, get) => ({
     set({ maintenanceTasks: get().maintenanceTasks.filter((m) => m.id !== id) });
   },
 
+  addProperty: async (property) => {
+    const created = await propertyService.create(property);
+    set({
+      properties: [...get().properties, created],
+      activePropertyId: get().activePropertyId ?? created.id,
+    });
+    return created;
+  },
   updateProperty: async (id, patch) => {
     const updated = await propertyService.update(id, patch);
     if (!updated) return;
     set({ properties: get().properties.map((p) => (p.id === id ? updated : p)) });
+  },
+  deleteProperty: async (id) => {
+    await propertyService.remove(id);
+    await Promise.all([
+      ...get()
+        .bookings.filter((b) => b.propertyId === id)
+        .map((b) => bookingService.remove(b.id)),
+      ...get()
+        .cleaningTasks.filter((c) => c.propertyId === id)
+        .map((c) => cleaningService.remove(c.id)),
+      ...get()
+        .maintenanceTasks.filter((m) => m.propertyId === id)
+        .map((m) => maintenanceService.remove(m.id)),
+    ]);
+    const remaining = get().properties.filter((p) => p.id !== id);
+    set({
+      properties: remaining,
+      bookings: get().bookings.filter((b) => b.propertyId !== id),
+      cleaningTasks: get().cleaningTasks.filter((c) => c.propertyId !== id),
+      maintenanceTasks: get().maintenanceTasks.filter((m) => m.propertyId !== id),
+      activePropertyId:
+        get().activePropertyId === id ? remaining[0]?.id ?? null : get().activePropertyId,
+    });
   },
 
   addContact: async (c) => {
