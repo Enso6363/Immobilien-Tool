@@ -1,0 +1,23 @@
+:root {
+  --bg: #f4f1ec; /* warmes Papierweiß */
+  --surface: #ffffff;
+  --surface-2: #faf8f4;
+  --ink: #221a28; /* Aubergine-Schwarz, Text */
+  --ink-soft: #6b6470; /* gedämpfter Text */
+  --line: #e7e1d9; /* Haarlinien */
+  --primary: #4a2d5a; /* Aubergine, Sidebar */
+  --primary-deep: #352043;
+  --accent: #c9772f; /* Bernstein, CTAs */
+  --success: #3f7d5e;
+  --success-bg: #e4f0e8; /* Salbei = erledigt */
+  --warning: #c28a20;
+  --warning-bg: #f6ecd0; /* Bernstein = ausstehend */
+  --danger: #b84a3e;
+  --danger-bg: #f4ddd8; /* Tonrot = dringend */
+  --info: #3d6a8a;
+  --info-bg: #e1ebf1;
+
+  --font-display: 'Fraunces', serif;
+  --font-body: 'Inter', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Spline Sans Mono', ui-monospace, monospace;
+}

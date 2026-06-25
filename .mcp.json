@@ -1,0 +1,17 @@
+{
+  "mcpServers": {
+    "headroom": {
+      "command": "docker",
+      "args": [
+        "run",
+        "-i",
+        "--rm",
+        "--entrypoint",
+        "headroom",
+        "ghcr.io/chopratejas/headroom:latest",
+        "mcp",
+        "serve"
+      ]
+    }
+  }
+}

@@ -1,0 +1,25 @@
+# Secrets — never commit
+.env
+.env.*
+!.env.example
+secrets/
+*.pem
+*credentials*
+
+# Token hygiene: keep bulky/generated stuff out of git (and out of agent context)
+data/
+reports/
+graphify-out/
+__pycache__/
+*.pyc
+.venv/
+node_modules/
+dist/
+build/
+
+# Local-only Claude settings (personal overrides)
+.claude/settings.local.json
+
+# Setup scaffolding source (already merged into the project, not the project itself)
+files.zip
+extracted/
