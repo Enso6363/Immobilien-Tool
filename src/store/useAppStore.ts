@@ -53,7 +53,9 @@ interface AppState {
 }
 
 /** Generisches Add/Update/Remove für eine Entity-Liste im Store — erspart die immer
- *  gleiche create→set / update→set / remove→set-Schreibarbeit pro Entität. */
+ *  gleiche create→set / update→set / remove→set-Schreibarbeit pro Entität.
+ *  Die Casts sind nötig, weil `key` zur Laufzeit generisch ist — Zustands-Slices
+ *  sind aber immer Arrays von `T`, sodass das hier sicher ist. */
 function listActions<T extends { id: ID }>(
   service: {
     create: (item: Omit<T, "id">) => Promise<T>;
@@ -65,24 +67,21 @@ function listActions<T extends { id: ID }>(
   key: keyof AppState,
 ) {
   const list = () => get()[key] as unknown as T[];
+  const setList = (next: T[]) => set({ [key]: next } as unknown as Partial<AppState>);
   return {
     add: async (item: Omit<T, "id">) => {
       const created = await service.create(item);
-      set({ [key]: [...list(), created] } as unknown as Partial<AppState>);
+      setList([...list(), created]);
       return created;
     },
     update: async (id: ID, patch: Partial<T>) => {
       const updated = await service.update(id, patch);
       if (!updated) return;
-      set({
-        [key]: list().map((x) => (x.id === id ? updated : x)),
-      } as unknown as Partial<AppState>);
+      setList(list().map((x) => (x.id === id ? updated : x)));
     },
     remove: async (id: ID) => {
       await service.remove(id);
-      set({
-        [key]: list().filter((x) => x.id !== id),
-      } as unknown as Partial<AppState>);
+      setList(list().filter((x) => x.id !== id));
     },
   };
 }
@@ -180,6 +179,9 @@ export const useAppStore = create<AppState>((set, get) => {
     updateProperty: propertyActions.update,
     deleteProperty: async (id) => {
       await propertyService.remove(id);
+      const remainingBookings = get().bookings.filter((b) => b.propertyId !== id);
+      const remainingCleaning = get().cleaningTasks.filter((c) => c.propertyId !== id);
+      const remainingMaintenance = get().maintenanceTasks.filter((m) => m.propertyId !== id);
       await Promise.all([
         ...get()
           .bookings.filter((b) => b.propertyId === id)
@@ -194,11 +196,9 @@ export const useAppStore = create<AppState>((set, get) => {
       const remaining = get().properties.filter((p) => p.id !== id);
       set({
         properties: remaining,
-        bookings: get().bookings.filter((b) => b.propertyId !== id),
-        cleaningTasks: get().cleaningTasks.filter((c) => c.propertyId !== id),
-        maintenanceTasks: get().maintenanceTasks.filter(
-          (m) => m.propertyId !== id,
-        ),
+        bookings: remainingBookings,
+        cleaningTasks: remainingCleaning,
+        maintenanceTasks: remainingMaintenance,
         activePropertyId:
           get().activePropertyId === id
             ? (remaining[0]?.id ?? null)
