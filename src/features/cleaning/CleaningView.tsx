@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Sparkles } from 'lucide-react';
-import { useActiveCleaningTasks, useAppStore } from '@/store/useAppStore';
+import { useActiveCleaningTasks, useActiveProperty, useAppStore } from '@/store/useAppStore';
 import { SectionHeader } from '@/components/shared/SectionHeader';
 import { EmptyState } from '@/components/shared/EmptyState';
 import { CleaningRow } from '@/features/cleaning/CleaningRow';
@@ -17,14 +17,17 @@ const FILTERS: { key: Filter; label: string }[] = [
 
 export function CleaningView() {
   const tasks = useActiveCleaningTasks();
+  const property = useActiveProperty();
   const activePropertyId = useAppStore((s) => s.activePropertyId);
-  const contacts = useAppStore((s) => s.contacts);
+  const allContacts = useAppStore((s) => s.contacts);
   const addCleaningTask = useAppStore((s) => s.addCleaningTask);
   const updateCleaningTask = useAppStore((s) => s.updateCleaningTask);
   const deleteCleaningTask = useAppStore((s) => s.deleteCleaningTask);
   const [filter, setFilter] = useState<Filter>('anstehend');
 
-  if (!activePropertyId) return null;
+  if (!activePropertyId || !property) return null;
+
+  const contacts = allContacts.filter((c) => property.contactIds.includes(c.id));
 
   const filtered = tasks
     .filter((t) => {
@@ -48,7 +51,7 @@ export function CleaningView() {
         }
       />
 
-      <div className="flex gap-2">
+      <div className="flex flex-wrap gap-2">
         {FILTERS.map((f) => (
           <Button
             key={f.key}
@@ -74,6 +77,7 @@ export function CleaningView() {
                 updateCleaningTask(task.id, { status: 'erledigt', completedAt: new Date().toISOString() })
               }
               onMarkNoShow={() => updateCleaningTask(task.id, { status: 'nicht_erschienen' })}
+              onReset={() => updateCleaningTask(task.id, { status: 'geplant', completedAt: undefined })}
               onDelete={() => deleteCleaningTask(task.id)}
             />
           ))}

@@ -17,7 +17,7 @@ const ToastContext = React.createContext<ToastContextValue | null>(null);
 
 const AUTO_DISMISS_MS = 3000;
 
-export function ToastProvider({ children }: { children: React.ReactNode }): JSX.Element {
+export function ToastProvider({ children }: { children: React.ReactNode }): React.JSX.Element {
   const [toasts, setToasts] = React.useState<ToastItem[]>([]);
   const idRef = React.useRef(0);
 

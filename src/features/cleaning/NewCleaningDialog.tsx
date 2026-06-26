@@ -9,7 +9,7 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Input, Label, NativeSelect } from '@/components/ui/input';
+import { Input, Label, NativeSelect, Textarea } from '@/components/ui/input';
 import { useToast } from '@/components/shared/Toast';
 
 export function NewCleaningDialog({
@@ -25,6 +25,7 @@ export function NewCleaningDialog({
   const [open, setOpen] = useState(false);
   const [date, setDate] = useState('');
   const [cleanerId, setCleanerId] = useState('');
+  const [notes, setNotes] = useState('');
 
   // Putzkräfte bevorzugt oben anzeigen, aber alle Kontakte erlauben.
   const sortedContacts = [...contacts].sort((a, b) => {
@@ -36,6 +37,7 @@ export function NewCleaningDialog({
   function reset() {
     setDate('');
     setCleanerId('');
+    setNotes('');
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -48,6 +50,7 @@ export function NewCleaningDialog({
         cleanerId,
         status: 'geplant',
         autoSuggested: false,
+        notes: notes.trim() || undefined,
       });
       toast('Reinigungstermin angelegt', 'success');
       reset();
@@ -99,6 +102,15 @@ export function NewCleaningDialog({
                 </option>
               ))}
             </NativeSelect>
+          </div>
+          <div>
+            <Label htmlFor="cleaning-notes">Notiz</Label>
+            <Textarea
+              id="cleaning-notes"
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              placeholder="optional"
+            />
           </div>
           <DialogFooter>
             <Button type="submit">Termin anlegen</Button>

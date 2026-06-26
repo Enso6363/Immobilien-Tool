@@ -1,5 +1,5 @@
 import type { MaintStatus } from '@/types';
-import { useActiveMaintenanceTasks, useAppStore } from '@/store/useAppStore';
+import { useActiveMaintenanceTasks, useActiveProperty, useAppStore } from '@/store/useAppStore';
 import { SectionHeader } from '@/components/shared/SectionHeader';
 import { EmptyState } from '@/components/shared/EmptyState';
 import { TaskCard } from '@/features/maintenance/TaskCard';
@@ -14,12 +14,16 @@ const COLUMNS: { key: MaintStatus; label: string }[] = [
 
 export function MaintenanceView() {
   const tasks = useActiveMaintenanceTasks();
+  const property = useActiveProperty();
   const activePropertyId = useAppStore((s) => s.activePropertyId);
-  const contacts = useAppStore((s) => s.contacts);
+  const allContacts = useAppStore((s) => s.contacts);
   const updateMaintenanceTask = useAppStore((s) => s.updateMaintenanceTask);
   const addMaintenanceTask = useAppStore((s) => s.addMaintenanceTask);
+  const deleteMaintenanceTask = useAppStore((s) => s.deleteMaintenanceTask);
 
-  if (!activePropertyId) return null;
+  if (!activePropertyId || !property) return null;
+
+  const contacts = allContacts.filter((c) => property.contactIds.includes(c.id));
 
   return (
     <div className="flex flex-col gap-6">
@@ -50,6 +54,7 @@ export function MaintenanceView() {
                       task={task}
                       assignee={contacts.find((c) => c.id === task.assigneeId)}
                       onMove={(status) => updateMaintenanceTask(task.id, { status })}
+                      onDelete={() => deleteMaintenanceTask(task.id)}
                     />
                   ))}
                 </div>

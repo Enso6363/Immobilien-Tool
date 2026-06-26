@@ -16,6 +16,7 @@ export interface Property {
     notes?: string; // Schlüsselübergabe, Hausordnung
   };
   contactIds: ID[]; // verknüpfte Kontakte
+  notes?: string; // Freitext: Dokumente, Hausordnung, interne Notizen
 }
 
 export type BookingStatus = 'angefragt' | 'bestätigt' | 'laufend' | 'abgereist' | 'storniert';
@@ -43,6 +44,7 @@ export interface CleaningTask {
   completedAt?: string; // Zeitstempel "war da"
   autoSuggested?: boolean; // automatisch nach Abreise vorgeschlagen
   linkedBookingId?: ID;
+  notes?: string;
 }
 
 export type MaintCategory = 'elektrik' | 'sanitär' | 'möbel' | 'haushaltsgerät' | 'sonstiges';

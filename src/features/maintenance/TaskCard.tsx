@@ -1,4 +1,5 @@
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { useState } from 'react';
+import { ChevronLeft, ChevronRight, Trash2 } from 'lucide-react';
 import type { MaintenanceTask, MaintStatus, Contact } from '@/types';
 import { StatusPill, priorityTone } from '@/components/shared/StatusPill';
 import { Button } from '@/components/ui/button';
@@ -11,11 +12,14 @@ export function TaskCard({
   task,
   assignee,
   onMove,
+  onDelete,
 }: {
   task: MaintenanceTask;
   assignee: Contact | undefined;
   onMove: (status: MaintStatus) => void;
+  onDelete: () => void;
 }) {
+  const [confirmDelete, setConfirmDelete] = useState(false);
   const idx = ORDER.indexOf(task.status);
   const isUrgent = task.priority === 'dringend';
 
@@ -36,24 +40,41 @@ export function TaskCard({
       </div>
       {assignee && <span className="text-xs text-ink-soft">Handwerker: {assignee.name}</span>}
 
-      <div className="mt-1 flex justify-between">
+      <div className="mt-1 flex items-center justify-between">
+        <div className="flex">
+          <Button
+            size="sm"
+            variant="ghost"
+            disabled={idx === 0}
+            onClick={() => onMove(ORDER[idx - 1])}
+            aria-label="Zurück"
+          >
+            <ChevronLeft size={14} />
+          </Button>
+          <Button
+            size="sm"
+            variant="ghost"
+            disabled={idx === ORDER.length - 1}
+            onClick={() => onMove(ORDER[idx + 1])}
+            aria-label="Vorwärts"
+          >
+            <ChevronRight size={14} />
+          </Button>
+        </div>
         <Button
           size="sm"
-          variant="ghost"
-          disabled={idx === 0}
-          onClick={() => onMove(ORDER[idx - 1])}
-          aria-label="Zurück"
+          variant={confirmDelete ? 'destructive' : 'ghost'}
+          onClick={() => {
+            if (confirmDelete) {
+              onDelete();
+            } else {
+              setConfirmDelete(true);
+            }
+          }}
+          onBlur={() => setConfirmDelete(false)}
+          aria-label="Löschen"
         >
-          <ChevronLeft size={14} />
-        </Button>
-        <Button
-          size="sm"
-          variant="ghost"
-          disabled={idx === ORDER.length - 1}
-          onClick={() => onMove(ORDER[idx + 1])}
-          aria-label="Vorwärts"
-        >
-          <ChevronRight size={14} />
+          {confirmDelete ? 'Wirklich?' : <Trash2 size={14} />}
         </Button>
       </div>
     </div>

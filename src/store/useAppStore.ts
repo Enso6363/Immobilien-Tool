@@ -180,7 +180,18 @@ export const useAppStore = create<AppState>((set, get) => ({
   },
   deleteContact: async (id) => {
     await contactService.remove(id);
-    set({ contacts: get().contacts.filter((c) => c.id !== id) });
+    const affectedProperties = get().properties.filter((p) => p.contactIds.includes(id));
+    await Promise.all(
+      affectedProperties.map((p) =>
+        propertyService.update(p.id, { contactIds: p.contactIds.filter((cid) => cid !== id) }),
+      ),
+    );
+    set({
+      contacts: get().contacts.filter((c) => c.id !== id),
+      properties: get().properties.map((p) =>
+        p.contactIds.includes(id) ? { ...p, contactIds: p.contactIds.filter((cid) => cid !== id) } : p,
+      ),
+    });
   },
 }));
 

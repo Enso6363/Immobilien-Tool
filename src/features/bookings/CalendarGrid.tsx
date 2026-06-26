@@ -35,9 +35,11 @@ const LEGEND: BookingStatus[] = ['angefragt', 'bestätigt', 'laufend', 'abgereis
 export function CalendarGrid({
   bookings,
   onSelectBooking,
+  onCreateForDay,
 }: {
   bookings: Booking[];
   onSelectBooking: (booking: Booking) => void;
+  onCreateForDay: (dayISO: string) => void;
 }) {
   const [month, setMonth] = useState(new Date());
   // Bestätigungs-Schlüssel je Tag (nicht je Buchung), damit nur der angeklickte
@@ -115,13 +117,18 @@ export function CalendarGrid({
           return (
             <div key={day.toISOString()} className="group relative">
               <button
-                onClick={() => booking && onSelectBooking(booking)}
-                disabled={!booking}
-                title={booking ? `${booking.guestName} – ${statusLabel}` : undefined}
-                aria-label={booking ? `${day.getDate()}. ${booking.guestName}, ${statusLabel}` : undefined}
+                onClick={() => (booking ? onSelectBooking(booking) : onCreateForDay(dayISO))}
+                title={booking ? `${booking.guestName} – ${statusLabel}` : 'Buchung anlegen'}
+                aria-label={
+                  booking
+                    ? `${day.getDate()}. ${booking.guestName}, ${statusLabel}`
+                    : `${day.getDate()}. frei – Buchung anlegen`
+                }
                 className={cn(
-                  'flex h-14 w-full flex-col items-center justify-center gap-0.5 rounded-md text-xs transition-colors',
-                  booking ? cn(TONE_BG[tone], 'cursor-pointer hover:opacity-80') : 'text-ink-soft',
+                  'group/day flex h-14 w-full flex-col items-center justify-center gap-0.5 rounded-md text-xs transition-colors',
+                  booking
+                    ? cn(TONE_BG[tone], 'cursor-pointer hover:opacity-80')
+                    : 'cursor-pointer text-ink-soft hover:bg-surface-2',
                   isToday(day) && 'ring-2 ring-accent',
                   !isSameMonth(day, month) && 'opacity-40',
                 )}
@@ -129,6 +136,11 @@ export function CalendarGrid({
                 <span className="font-medium">{day.getDate()}</span>
                 {booking && <span className="max-w-full truncate px-1 text-[10px]">{booking.guestName}</span>}
                 {booking && <span className="max-w-full truncate px-1 text-[9px] font-medium uppercase opacity-80">{statusLabel}</span>}
+                {!booking && (
+                  <span className="text-[14px] leading-none text-ink-soft opacity-0 transition-opacity group-hover/day:opacity-100">
+                    +
+                  </span>
+                )}
               </button>
               {canRemoveDay && (
                 <button

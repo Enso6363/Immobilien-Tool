@@ -27,6 +27,7 @@ export function EditContactDialog({
   const addContact = useAppStore((s) => s.addContact);
   const updateContact = useAppStore((s) => s.updateContact);
   const updateProperty = useAppStore((s) => s.updateProperty);
+  const deleteContact = useAppStore((s) => s.deleteContact);
   const properties = useAppStore((s) => s.properties);
   const { toast } = useToast();
 
@@ -35,6 +36,18 @@ export function EditContactDialog({
   const [role, setRole] = useState<ContactRole>(contact?.role ?? 'sonstiges');
   const [phone, setPhone] = useState(contact?.phone ?? '');
   const [email, setEmail] = useState(contact?.email ?? '');
+  const [confirmDelete, setConfirmDelete] = useState(false);
+
+  async function handleDelete() {
+    if (!contact) return;
+    try {
+      await deleteContact(contact.id);
+      toast('Kontakt gelöscht', 'success');
+      setOpen(false);
+    } catch {
+      toast('Löschen fehlgeschlagen', 'error');
+    }
+  }
 
   function reset() {
     setName(contact?.name ?? '');
@@ -74,7 +87,10 @@ export function EditContactDialog({
       open={open}
       onOpenChange={(next) => {
         setOpen(next);
-        if (!next) reset();
+        if (!next) {
+          reset();
+          setConfirmDelete(false);
+        }
       }}
     >
       <DialogTrigger asChild>{trigger}</DialogTrigger>
@@ -107,7 +123,23 @@ export function EditContactDialog({
               <Input id="contactEmail" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
             </div>
           </div>
-          <DialogFooter>
+          <DialogFooter className="justify-between">
+            {contact && (
+              <Button
+                type="button"
+                variant={confirmDelete ? 'destructive' : 'outline'}
+                onClick={() => {
+                  if (confirmDelete) {
+                    handleDelete();
+                  } else {
+                    setConfirmDelete(true);
+                  }
+                }}
+                onBlur={() => setConfirmDelete(false)}
+              >
+                {confirmDelete ? 'Wirklich löschen?' : 'Kontakt löschen'}
+              </Button>
+            )}
             <Button type="submit">{contact ? 'Speichern' : 'Anlegen'}</Button>
           </DialogFooter>
         </form>

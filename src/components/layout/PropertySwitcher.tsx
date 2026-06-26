@@ -23,18 +23,18 @@ export function PropertySwitcher() {
   }
 
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex min-w-0 items-center gap-2">
       <Select.Root value={activePropertyId ?? undefined} onValueChange={setActiveProperty}>
         <Select.Trigger
-          className="flex min-w-56 items-center justify-between gap-2 rounded-md border border-line bg-surface px-3 py-2 text-sm text-ink focus-visible:outline-none"
+          className="flex w-40 min-w-0 items-center justify-between gap-2 rounded-md border border-line bg-surface px-3 py-2 text-sm text-ink focus-visible:outline-none sm:w-56"
           aria-label="Immobilie wählen"
         >
-          <span className="flex items-center gap-2 truncate">
-            <Home size={16} className="text-ink-soft" aria-hidden />
+          <span className="flex min-w-0 items-center gap-2 truncate">
+            <Home size={16} className="shrink-0 text-ink-soft" aria-hidden />
             <Select.Value />
           </span>
           <Select.Icon>
-            <ChevronDown size={16} className="text-ink-soft" />
+            <ChevronDown size={16} className="shrink-0 text-ink-soft" />
           </Select.Icon>
         </Select.Trigger>
         <Select.Portal>

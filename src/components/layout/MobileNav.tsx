@@ -1,9 +1,10 @@
 import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, CalendarDays, Sparkles, Wrench, Home } from 'lucide-react';
+import { LayoutDashboard, Building2, CalendarDays, Sparkles, Wrench, Home } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const NAV_ITEMS = [
   { to: '/', label: 'Dashboard', icon: LayoutDashboard },
+  { to: '/portfolio', label: 'Portfolio', icon: Building2 },
   { to: '/buchungen', label: 'Buchungen', icon: CalendarDays },
   { to: '/reinigung', label: 'Reinigung', icon: Sparkles },
   { to: '/instandhaltung', label: 'Wartung', icon: Wrench },
