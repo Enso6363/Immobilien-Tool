@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { addMonths, format, parseISO, subMonths } from 'date-fns';
+import { addMonths, format, subMonths } from 'date-fns';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import type { Booking } from '@/types';
 import {
@@ -41,8 +41,12 @@ export function DashboardView() {
 
   const occupancy = occupancyRate(bookings, month);
   const currentGuest = bookings.find((b) => b.status === 'laufend');
+  // Lokales Datum statt new Date(): ein Check-in von heute soll als "nächste
+  // Anreise" zählen, nicht erst nach Mitternacht (sonst fällt eine Anreise von
+  // heute Nachmittag aus dem Vergleich raus, siehe Topbar.tsx-Kommentar).
+  const todayISO = format(new Date(), 'yyyy-MM-dd');
   const nextArrival = bookings
-    .filter((b) => b.status === 'bestätigt' && parseISO(b.checkIn) > new Date())
+    .filter((b) => b.status === 'bestätigt' && b.checkIn >= todayISO)
     .sort((a, b) => a.checkIn.localeCompare(b.checkIn))[0];
 
   const nextCleaning = cleaningTasks
