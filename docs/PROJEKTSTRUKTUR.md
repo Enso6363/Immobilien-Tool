@@ -25,15 +25,19 @@ Dieses Repo ist ein wiederverwendbares Claude-Code-Setup. Projektspezifische Inh
 - Stoppen: `docker stop headroom-proxy` · Entfernen: `docker rm -f headroom-proxy`
 - Kein lokaler Rust-Build nötig (pip-Install schlägt auf Windows ohne Cargo fehl —
   daher Docker-Weg statt `pip install headroom-ai`)
+- **Status: ungetestet, funktioniert aktuell nicht** — Proxy läuft healthy, aber `ANTHROPIC_BASE_URL`
+  + Abo-Login (OAuth) wurde noch nicht erfolgreich durchgetestet. Vor Nutzung selbst verifizieren:
+  in eigenem Terminal `ANTHROPIC_BASE_URL=http://127.0.0.1:8787 claude` starten und prüfen ob normale
+  Antwort kommt statt Auth-Fehler.
 
 **Noch nicht installiert** (bei Bedarf nachziehen):
-- `andrej-karpathy-skills` Plugin
 - GitHub-MCP / Context7 (nur mit explizitem OK, da Kontextkosten)
 
+**andrej-karpathy-skills — installiert** (Plugin, scope: user, global aktiv)
 **caveman — installiert** (Plugin, aktiv genutzt, Modi `lite|full|ultra`)
 
-**graphify — installiert** (`.venv`, Paket `graphifyy` 0.8.49, CLI `graphify`):
-- Run: `.venv\Scripts\graphify install --platform claude` um Skill in Claude Code zu registrieren
+**graphify — installiert** (global, kein projekt-lokales `.venv`, Paket `graphifyy` 0.8.49, CLI `graphify`):
+- Run: `graphify install --platform claude` um Skill in Claude Code zu registrieren
 - Graph bauen erst sinnvoll, wenn echter Code im Repo liegt
 
 ## Wie entfernen / deaktivieren
