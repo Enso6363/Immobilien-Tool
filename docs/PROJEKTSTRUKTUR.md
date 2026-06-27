@@ -28,8 +28,9 @@ Dieses Repo ist ein wiederverwendbares Claude-Code-Setup. Projektspezifische Inh
 
 **Noch nicht installiert** (bei Bedarf nachziehen):
 - `andrej-karpathy-skills` Plugin
-- caveman (siehe Caveman-Setup separat)
 - GitHub-MCP / Context7 (nur mit explizitem OK, da Kontextkosten)
+
+**caveman — installiert** (Plugin, aktiv genutzt, Modi `lite|full|ultra`)
 
 **graphify — installiert** (`.venv`, Paket `graphifyy` 0.8.49, CLI `graphify`):
 - Run: `.venv\Scripts\graphify install --platform claude` um Skill in Claude Code zu registrieren
